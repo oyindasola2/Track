@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Track Rider",
+    "slug": "track-rider",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["android"],
+    "scheme": "trackrider",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F6F0E1",
+    "android": {
+      "package": "com.usetracktech.rider",
+      "versionCode": 1,
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+        "WAKE_LOCK"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "usetracktech.com",
+              "pathPrefix": "/track/"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Track shares your location only while you're delivering, so the customer can see their order coming.",
+          "locationWhenInUsePermission": "Track shares your location only while you're delivering, so the customer can see their order coming.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      "expo-secure-store"
+    ]
+  }
+}

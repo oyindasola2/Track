@@ -1,0 +1,5 @@
+fallback: true
+reason: Azure OpenAI image request failed: OpenAI provider request timed out after 45s
+appName: Track Rider
+appType: tool
+timestamp: 2026-11-23T20:41:18.015Z
