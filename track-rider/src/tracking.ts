@@ -68,7 +68,12 @@ const dropHead = (n: number) =>
     await AsyncStorage.setItem(K.queue, JSON.stringify((await readQueue()).slice(n)));
   });
 
-const clearQueue = () => withLock(() => AsyncStorage.multiRemove([K.queue, K.retryAt, K.issue]));
+const clearQueue = () =>
+  withLock(async () => {
+    await AsyncStorage.removeItem(K.queue);
+    await AsyncStorage.removeItem(K.retryAt);
+    await AsyncStorage.removeItem(K.issue);
+  });
 
 // ---------- state for the UI ----------
 export type TrackState = {
@@ -143,13 +148,13 @@ async function doFlush(force: boolean) {
       // Accepted points are stored by the server; rejected ones (low_accuracy, future_time,
       // too_old) are dropped and never retried. Either way this batch leaves the queue.
       await dropHead(batch.length);
-      await AsyncStorage.multiRemove([K.retryAt]);
+      await AsyncStorage.removeItem(K.retryAt);
       await AsyncStorage.setItem(K.lastSent, String(Date.now()));
       await setIssue(null);
       continue;
     }
     if (r.status === 409 && code === 'delivery_complete') {
-      await stopTracking('delivered');
+      await stopTracking('delivered', true);
       return;
     }
     if (r.status === 409 && code === 'delivery_not_started') {
@@ -157,7 +162,7 @@ async function doFlush(force: boolean) {
       return;
     }
     if (r.status === 401) {
-      await stopTracking('invalid_link');
+      await stopTracking('invalid_link', true);
       return;
     }
     if (r.status === 429) {
@@ -211,7 +216,7 @@ export async function startTracking(session: Session) {
   await Location.startLocationUpdatesAsync(TASK, {
     accuracy: Location.Accuracy.High,
     timeInterval: 10000,
-    distanceInterval: 15,
+    distanceInterval: 0,
     pausesUpdatesAutomatically: false,
     foregroundService: {
       notificationTitle: 'Track is sharing your location',
@@ -222,9 +227,19 @@ export async function startTracking(session: Session) {
   });
 }
 
-export async function stopTracking(reason: StopReason) {
+/**
+ * Stops tracking. Unless skipFlush is set (the server already told us to stop), it first tries
+ * to upload everything still queued so points recorded just before Delivered are not lost.
+ */
+export async function stopTracking(reason: StopReason, skipFlush = false) {
   if (await isTrackingActive()) {
     await Location.stopLocationUpdatesAsync(TASK).catch(() => {});
+  }
+  if (!skipFlush && reason !== 'invalid_link') {
+    await Promise.race([
+      flush(true).catch(() => {}),
+      new Promise<void>((resolve) => setTimeout(resolve, 10000)),
+    ]);
   }
   await clearQueue();
   await AsyncStorage.removeItem(K.session);

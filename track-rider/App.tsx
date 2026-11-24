@@ -49,7 +49,7 @@ export default function App() {
 
   /** Handle a URL from an App Link tap (cold start or while running). */
   const handleUrl = useCallback(
-    async (url: string | null) => {
+    async (url: string | null | undefined) => {
       if (!url) return false;
       const r = parseRiderLink(url);
       if (r.ok) {
