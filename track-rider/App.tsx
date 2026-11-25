@@ -18,6 +18,7 @@ import { PermissionScreen } from './src/screens/PermissionScreen';
 import { BatteryScreen } from './src/screens/BatteryScreen';
 import { TrackingScreen } from './src/screens/TrackingScreen';
 import { colors } from './src/theme';
+import { shortCode } from './src/format';
 
 type Stage = 'loading' | 'link' | 'permissions' | 'battery' | 'ready';
 
@@ -57,7 +58,7 @@ export default function App() {
         const active = await getSession();
         if (active && active.code !== r.link.code && (await isTrackingActive())) {
           setLinkMessage(
-            `You are still delivering order #${active.code}. Mark it delivered before opening another link.`,
+            `You are still delivering order #${shortCode(active.code)}. Mark it delivered before opening another link.`,
           );
           const saved = await loadRiderLink();
           if (saved) {
@@ -133,7 +134,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" backgroundColor={colors.cream} />
+      <StatusBar style="dark" />
       {stage === 'loading' && (
         <View style={s.center}>
           <ActivityIndicator size="large" color={colors.ink} />

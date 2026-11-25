@@ -4,6 +4,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { errCode, postFn } from './api';
+import { shortCode } from './format';
 
 export const TASK = 'track-rider-location';
 const BATCH = 50;
@@ -220,7 +221,7 @@ export async function startTracking(session: Session) {
     pausesUpdatesAutomatically: false,
     foregroundService: {
       notificationTitle: 'Track is sharing your location',
-      notificationBody: `Delivering order ${session.code}`,
+      notificationBody: `Delivering order #${shortCode(session.code)}`,
       notificationColor: '#FFC93C',
       killServiceOnDestroy: false,
     },

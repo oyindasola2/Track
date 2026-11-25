@@ -1,4 +1,4 @@
-# cobalt-beacon
+# Track
 
 This project was created with Shipper.
 

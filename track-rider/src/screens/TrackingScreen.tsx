@@ -17,6 +17,7 @@ import {
   TrackState,
 } from '../tracking';
 import { colors, radius, space, type } from '../theme';
+import { shortCode } from '../format';
 import { BigButton, Body, Brand, Notice, Screen, Title } from '../ui';
 
 type Order = {
@@ -432,7 +433,7 @@ export function TrackingScreen({ link, message, onChangeLink, onNeedPermissions 
             <Text style={s.dialogTitle}>Mark as delivered?</Text>
             {confirm && (
               <Text style={s.dialogBody}>
-                Order #{confirm.tracking_number} for {confirm.buyer_name}. The customer will get a WhatsApp
+                {confirm.item_name} (#{shortCode(confirm.tracking_number)}) for {confirm.buyer_name}. The customer will get a WhatsApp
                 message.
               </Text>
             )}
@@ -459,13 +460,11 @@ function OrderCard({
   const done = isDelivered(o);
   return (
     <View style={[s.card, done && { opacity: 0.65 }]}>
-      <View style={s.cardTop}>
-        <Text style={s.code}>#{o.tracking_number}</Text>
-        <View style={[s.chip, done && { backgroundColor: colors.okBg }]}>
-          <Text style={[s.chipText, done && { color: colors.ok }]}>{statusLabel(o)}</Text>
-        </View>
-      </View>
       <Text style={s.item}>{o.item_name}</Text>
+      <View style={[s.chip, done && { backgroundColor: colors.okBg }]}>
+        <Text style={[s.chipText, done && { color: colors.ok }]}>{statusLabel(o)}</Text>
+      </View>
+      <Text style={s.code}>Order #{shortCode(o.tracking_number)}</Text>
 
       <Text style={s.label}>CUSTOMER</Text>
       <Text style={s.value}>{o.buyer_name}</Text>
@@ -506,11 +505,17 @@ const s = StyleSheet.create({
     padding: space.lg,
     gap: 2,
   },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  code: { fontSize: type.heading, fontWeight: '900', color: colors.ink },
-  chip: { backgroundColor: colors.warnBg, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
+  code: { fontSize: type.small + 1, fontWeight: '800', color: colors.inkMuted, marginTop: 8 },
+  chip: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.warnBg,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginTop: 8,
+  },
   chipText: { fontSize: type.small, fontWeight: '800', color: colors.ink },
-  item: { fontSize: type.body + 1, fontWeight: '700', color: colors.ink, marginTop: 6 },
+  item: { fontSize: type.heading, fontWeight: '900', color: colors.ink, lineHeight: 30 },
   label: { fontSize: 13, fontWeight: '800', letterSpacing: 2, color: colors.inkMuted, marginTop: space.md },
   value: { fontSize: type.body, color: colors.ink, lineHeight: 26 },
   row: { flexDirection: 'row', gap: space.sm, marginTop: space.md },

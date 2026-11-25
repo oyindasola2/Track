@@ -8,7 +8,17 @@
     "scheme": "trackrider",
     "userInterfaceStyle": "light",
     "backgroundColor": "#F6F0E1",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#191919"
+    },
     "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#191919"
+      },
       "package": "com.usetracktech.rider",
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "pan",
